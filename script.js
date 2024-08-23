@@ -114,11 +114,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.grid-container').style.display = 'none';
         keyCountGroup.style.display = 'none';
 
-        keyCountLabel.innerText = `Number of keys: ${keyCount}`;
+        keyCountLabel.innerText = `Количество ключей: ${keyCount}`;
 
         progressBar.style.width = '0%';
         progressText.innerText = '0%';
-        progressLog.innerText = 'Starting...';
+        progressLog.innerText = 'Начинаю...';
         progressContainer.classList.remove('hidden');
         keyContainer.classList.add('hidden');
         generatedKeysTitle.classList.add('hidden');
@@ -148,7 +148,7 @@ const generateKeyProcess = async () => {
 
     for (let i = 0; i < game.attempts; i++) {
         const hasCode = await emulateProgress(clientToken, game.promoId);
-        updateProgress((100 / game.attempts) / keyCount, `Emulating progress ${i + 1}/${game.attempts}...`);
+        updateProgress((100 / game.attempts) / keyCount, `Эмуляция..." ${i + 1}/${game.attempts}...`);
         if (hasCode) {
             break;
         }
@@ -157,10 +157,10 @@ const generateKeyProcess = async () => {
 
     try {
         const key = await generateKey(clientToken, game.promoId);
-        updateProgress(100 / keyCount, 'Generating key...');
+        updateProgress(100 / keyCount, 'Создаем ключ...');
         return key;
     } catch (error) {
-        alert(`Failed to generate key: ${error.message}`);
+        alert(`Ошибка создания ключа: ${error.message}`);
         return null;
     }
 };
