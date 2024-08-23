@@ -148,7 +148,7 @@ const generateKeyProcess = async () => {
 
     for (let i = 0; i < game.attempts; i++) {
         const hasCode = await emulateProgress(clientToken, game.promoId);
-        updateProgress((100 / game.attempts) / keyCount, `Эмуляция..." ${i + 1}/${game.attempts}...`);
+        updateProgress((100 / game.attempts) / keyCount, `Эмуляция... ${i + 1}/${game.attempts}...`);
         if (hasCode) {
             break;
         }
@@ -201,7 +201,7 @@ Promise.all(promises).then(keys => {
 
     progressBar.style.width = '100%';
     progressText.innerText = '100%';
-    progressLog.innerText = 'Complete';
+    progressLog.innerText = 'Готово';
 
     startBtn.classList.remove('hidden');
     keyCountGroup.classList.remove('hidden');
