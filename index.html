@@ -1,90 +1,801 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Генератор Ключей Hamster Kombat</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Генератор ключей Hamster Kombat</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            transition: background-color 0.3s;
+        }
+        body.mass-generation-mode {
+            background-color: #292828;
+        }
+        #keysListContainer {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container.mass-generation-mode {
+            background-color: #282929;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+            font-size: 24px;
+            color: #007bff;
+            transition: color 0.3s ease;
+        }
+        .mass-generation-mode h1 {
+            color: #fff;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .game-option {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            outline: none;
+        }
+
+        .game-option img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .game-option p {
+            font-weight: 500;
+            color: #555;
+            transition: color 0.3s ease;
+        }
+
+        .mass-generation-mode .game-option p {
+            color: white;
+        }
+
+        .game-option.selected {
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px #007bff;
+        }
+        .game-option:active {
+            opacity: 0.7;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .key-slider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .key-slider input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            transition: background 0.3s;
+        }
+
+        .key-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .key-slider input[type="range"]:hover::-webkit-slider-thumb {
+            background: #0056b3;
+        }
+
+        #keyValue {
+            font-size: 18px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .mass-generation-mode button {
+            background-color: #3498db;
+            color: white;
+        }
+        .mass-generation-mode button:hover {
+            background-color: #2980b9;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .progress-bar {
+            background-color: #f5f7fa;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 25px;
+            height: 35px;
+            position: relative;
+        }
+
+        .progress-bar div {
+            height: 100%;
+            background-color: #007bff;
+            width: 0;
+            transition: width 0.5s;
+        }
+
+        #progressText {
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        .key-item {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .key-item input {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-right: 12px;
+        }
+
+        .copyKeyBtn {
+            background-color: #28a745;
+            border: none;
+            padding: 12px 20px;
+            color: white;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .copyKeyBtn:hover {
+            background-color: #218838;
+        }
+
+        .footer {
+            margin-top: 25px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        #copyStatus {
+            margin-top: 15px;
+            color: green;
+        }
+
+        #massGenerationBtn {
+            background-color: #ff0000;
+            margin-bottom: 20px;
+        }
+
+        #massGenerationBtn.active {
+            background-color: #28a745;
+        }
+
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Генератор Ключей Hamster Kombat</h1>
-        <div id="gameSelectContainer" class="grid-container">
-            <div class="game-option" data-game="9">
-                <img src="https://cdn.hamsterkombat.io/mud_racing/image.webp" alt="Polysphere">
-                <p>Mud Racing</p>
-                </div>
-                <div class="game-option" data-game="8">
-                <img src="https://cdn.hamsterkombat.io/mow_trim/image.webp" alt="Polysphere">
-                <p>Mow and Trim</p>
-                </div>
-            <div class="game-option" data-game="7">
+<div class="container">
+    <h1>Hamster Генератор ключей</h1>
+    <button id="massGenerationBtn">Режим массовой генерации</button>
+    <div id="gameSelectContainer" class="grid-container">
+        <div class="game-option" data-game="14">
+            <img src="https://cdn.hamsterkombat.io/bouncemasters/image.webp" alt="Bouncemasters">
+            <p>Bouncemasters</p>
+        </div>
+        <div class="game-option" data-game="13">
+            <img src="https://cdn.hamsterkombat.io/stone_age/image.webp" alt="Stone Age">
+            <p>Stone Age</p>
+        </div>
+        <div class="game-option" data-game="12">
+            <img src="https://cdn.hamsterkombat.io/fluff/image.webp" alt="Fluff">
+            <p>Fluff Crusade</p>
+        </div>
+        <div class="game-option" data-game="11">
+            <img src="https://cdn.hamsterkombat.io/zoopolis/image.webp" alt="Zoopolis">
+            <p>Zoopolis</p>
+        </div>
+        <div class="game-option" data-game="10">
+            <img src="https://cdn.hamsterkombat.io/tile_trio/image.webp" alt="Tile Trio">
+            <p>Tile Trio</p>
+        </div>
+        <div class="game-option" data-game="8">
+            <img src="https://cdn.hamsterkombat.io/mow_trim/image.webp" alt="Polysphere">
+            <p>Mow and Trim</p>
+        </div>
+        <div class="game-option" data-game="7">
             <img src="https://cdn.hamsterkombat.io/polysphere/image.webp" alt="Polysphere">
             <p>Polysphere</p>
-            </div>
-            <div class="game-option" data-game="6">
-                <img src="https://cdn.hamsterkombat.io/twerk/image.webp" alt="Twerk Race 3D">
-                <p>Twerk Race 3D</p>
-            </div>
-            <div class="game-option" data-game="5">
-                <img src="https://cdn.hamsterkombat.io/merge_away/image.webp" alt="Merge Away">
-                <p>Merge Away</p>
-            </div>
-            <div class="game-option" data-game="3">
-                <img src="https://cdn.hamsterkombat.io/my_clone_army/image.webp" alt="My Clone Army">
-                <p>My Clone Army</p>
-            </div>
-            <div class="game-option" data-game="2">
-                <img src="https://cdn.hamsterkombat.io/chain_cube/image.webp" alt="Chain Cube 2048">
-                <p>Chain Cube 2048</p>
-            </div>
-            <div class="game-option" data-game="4">
-                <img src="https://cdn.hamsterkombat.io/train_miner/image.webp" alt="Train Miner">
-                <p>Train Miner</p>
-            </div>
-            <div class="game-option" data-game="1">
-                <img src="https://cdn.hamsterkombat.io/bikeride/image.webp" alt="Bike Ride 3D">
-                <p>Bike Ride 3D</p>
-            </div>
         </div>
-
-        <div class="form-group hidden" id="keyCountGroup">
-            <label for="keyCountSelect">Выберите количество ключей:</label>
-            <div id="keyCountSelect" class="key-slider">
-                <input type="range" min="1" max="28" value="1" id="keyRange">
-                <span id="keyValue">1</span>
-            </div>
+        <div class="game-option" data-game="6">
+            <img src="https://cdn.hamsterkombat.io/twerk/image.webp" alt="Twerk Race 3D">
+            <p>Twerk Race 3D</p>
         </div>
-        <button id="startBtn" class="hidden">Сгенерировать</button>
-
-        <div id="progressContainer" class="hidden">
-            <div class="progress-bar">
-                <div id="progressBar"></div>
-            </div>
-            <p id="progressText">0%</p>
-            <p id="progressLog">Начинаю...</p>
+        <div class="game-option" data-game="5">
+            <img src="https://cdn.hamsterkombat.io/merge_away/image.webp" alt="Merge Away">
+            <p>Merge Away</p>
         </div>
-
-        <div id="keyContainer" class="hidden">
-            <h2 id="generatedKeysTitle" class="hidden">Сгенерированные ключи</h2>
-            <div id="keysListContainer">
-                <div id="keysList"></div>
-            </div>
-            <button id="copyAllBtn" class="hidden">Скопировать все ключи</button>
+        <div class="game-option" data-game="2">
+            <img src="https://cdn.hamsterkombat.io/chain_cube/image.webp" alt="Chain Cube 2048">
+            <p>Chain Cube 2048</p>
         </div>
-
-        <p id="keyCountLabel">Количество ключей:</p>
-
-        <button id="generateMoreBtn" class="hidden">Сделать еще ключи!</button>
-        <p id="copyStatus" class="hidden">Скопировано в буфер обмена!</p>
-        
-        <div class="footer">
-            <p>Подписывайтесь на нас в Телеграм!</p>
-            <button id="sourceCode" onclick="window.location.href='https://t.me/Crypto_Hamster_News'">Подписаться</button>
+        <div class="game-option" data-game="4">
+            <img src="https://cdn.hamsterkombat.io/train_miner/image.webp" alt="Train Miner">
+            <p>Train Miner</p>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <div class="form-group hidden" id="keyCountGroup">
+        <label for="keyCountSelect">Выберите количество ключей:</label>
+        <div id="keyCountSelect" class="key-slider">
+            <input type="range" min="1" max="28" value="1" id="keyRange">
+            <span id="keyValue">1</span>
+        </div>
+    </div>
+    <button id="startBtn" class="hidden">Создать ключи</button>
+
+    <div id="progressContainer" class="hidden">
+        <div class="progress-bar">
+            <div id="progressBar"></div>
+        </div>
+        <p id="progressText">0%</p>
+        <p id="progressLog">Прогресс...</p>
+    </div>
+
+    <div id="keyContainer" class="hidden">
+        <h2 id="generatedKeysTitle" class="hidden">Ключи</h2>
+        <div id="keysListContainer">
+            <div id="keysList"></div>
+        </div>
+        <button id="copyAllBtn" class="hidden">Скопировать все ключи</button>
+    </div>
+
+    <p id="keyCountLabel">Количество ключей:</p>
+
+    <button id="generateMoreBtn" class="hidden">Создать еще ключей</button>
+    <p id="copyStatus" class="hidden">Ключи успешно скопированы!</p>
+
+    <div class="footer">
+        <button id="sourceCode" onclick="window.open('https://t.me/Crypto_Hamster_News', '_blank')">Наш канал</button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const games = {
+            2: {
+                name: 'Chain Cube 2048',
+                appToken: 'd1690a07-3780-4068-810f-9b5bbf2931b2',
+                promoId: 'b4170868-cef0-424f-8eb9-be0622e8e8e3',
+                timing: 30000,
+                attempts: 20,
+            },
+            4: {
+                name: 'Train Miner',
+                appToken: '82647f43-3f87-402d-88dd-09a90025313f',
+                promoId: 'c4480ac7-e178-4973-8061-9ed5b2e17954',
+                timing: 30000,
+                attempts: 15,
+            },
+            5: {
+                name: 'Merge Away',
+                appToken: '8d1cc2ad-e097-4b86-90ef-7a27e19fb833',
+                promoId: 'dc128d28-c45b-411c-98ff-ac7726fbaea4',
+                timing: 30000,
+                attempts: 25,
+            },
+            6: {
+                name: 'Twerk Race 3D',
+                appToken: '61308365-9d16-4040-8bb0-2f4a4c69074c',
+                promoId: '61308365-9d16-4040-8bb0-2f4a4c69074c',
+                timing: 30000,
+                attempts: 20,
+            },
+            7: {
+                name: 'Polysphere',
+                appToken: '2aaf5aee-2cbc-47ec-8a3f-0962cc14bc71',
+                promoId: '2aaf5aee-2cbc-47ec-8a3f-0962cc14bc71',
+                timing: 20000,
+                attempts: 20,
+            },
+            8: {
+                name: 'Mow and Trim',
+                appToken: 'ef319a80-949a-492e-8ee0-424fb5fc20a6',
+                promoId: 'ef319a80-949a-492e-8ee0-424fb5fc20a6',
+                timing: 20000,
+                attempts: 20,
+            },
+            10: {
+                name: 'Tile Trio',
+                appToken: 'e68b39d2-4880-4a31-b3aa-0393e7df10c7',
+                promoId: 'e68b39d2-4880-4a31-b3aa-0393e7df10c7',
+                timing: 20000,
+                attempts: 20,
+            },
+            11: {
+                name: 'Zoopolis',
+                appToken: 'b2436c89-e0aa-4aed-8046-9b0515e1c46b',
+                promoId: 'b2436c89-e0aa-4aed-8046-9b0515e1c46b',
+                timing: 20000,
+                attempts: 20,
+            },
+            12: {
+                name: 'Fluff Crusade',
+                appToken: '112887b0-a8af-4eb2-ac63-d82df78283d9',
+                promoId: '112887b0-a8af-4eb2-ac63-d82df78283d9',
+                timing: 20000,
+                attempts: 30,
+            },
+            13: {
+                name: 'Stone Age',
+                appToken: '04ebd6de-69b7-43d1-9c4b-04a6ca3305af',
+                promoId: '04ebd6de-69b7-43d1-9c4b-04a6ca3305af',
+                timing: 20000,
+                attempts: 30,
+            },
+            14: {
+                name: 'Bouncemasters',
+                appToken: 'bc72d3b9-8e91-4884-9c33-f72482f0db37',
+                promoId: 'bc72d3b9-8e91-4884-9c33-f72482f0db37',
+                timing: 20000, // 40 seconds
+                attempts: 30,
+            }
+        };
+
+        const gameOptions = document.querySelectorAll('.game-option');
+        const keyCountGroup = document.getElementById('keyCountGroup');
+        const keyRange = document.getElementById('keyRange');
+        const keyValue = document.getElementById('keyValue');
+        const startBtn = document.getElementById('startBtn');
+        const keyCountLabel = document.getElementById('keyCountLabel');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const progressLog = document.getElementById('progressLog');
+        const keyContainer = document.getElementById('keyContainer');
+        const keysList = document.getElementById('keysList');
+        const copyAllBtn = document.getElementById('copyAllBtn');
+        const generatedKeysTitle = document.getElementById('generatedKeysTitle');
+        const copyStatus = document.getElementById('copyStatus');
+        const generateMoreBtn = document.getElementById('generateMoreBtn');
+        const massGenerationBtn = document.getElementById('massGenerationBtn');
+
+        let selectedGames = [];
+        let isMassGenerationMode = false;
+
+        const container = document.querySelector('.container');
+
+        massGenerationBtn.addEventListener('click', () => {
+            isMassGenerationMode = !isMassGenerationMode;
+            document.body.classList.toggle('mass-generation-mode', isMassGenerationMode);
+            container.classList.toggle('mass-generation-mode', isMassGenerationMode);
+            massGenerationBtn.classList.toggle('active', isMassGenerationMode);
+            massGenerationBtn.textContent = isMassGenerationMode ? 'Выключить режим массовой генерации' : 'Режим массовой генерации';
+
+            const textElements = container.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span, label, button');
+            textElements.forEach(element => {
+                element.style.color = isMassGenerationMode ? 'white' : '';
+            });
+
+            resetInterface();
+
+            if (!isMassGenerationMode) {
+                gameOptions.forEach(option => {
+                    option.classList.remove('selected', 'disabled');
+                    option.style.pointerEvents = '';
+                    option.style.opacity = '';
+                });
+                selectedGames = [];
+            }
+
+            updateGameOptionsState();
+            updateSelectedGames();
+
+            keyCountLabel.style.color = isMassGenerationMode ? 'white' : '';
+
+
+            gameOptions.forEach(option => option.classList.remove('selected'));
+        });
+
+        const MAX_SELECTED_GAMES = 6;
+
+        gameOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const gameId = option.dataset.game;
+                if (isMassGenerationMode) {
+                    const index = selectedGames.indexOf(gameId);
+                    if (index > -1) {
+                        selectedGames.splice(index, 1);
+                        option.classList.remove('selected');
+                        updateGameOptionsState();
+                    } else if (selectedGames.length < MAX_SELECTED_GAMES) {
+                        selectedGames.push(gameId);
+                        option.classList.add('selected');
+                        updateGameOptionsState();
+                    }
+                } else {
+                    gameOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    selectedGames = [gameId];
+                    keyCountGroup.classList.remove('hidden');
+                    keyCountGroup.style.removeProperty('display');
+                }
+                updateSelectedGames();
+            });
+        });
+
+        function updateGameOptionsState() {
+            if (isMassGenerationMode) {
+                gameOptions.forEach(option => {
+                    if (!option.classList.contains('selected')) {
+                        if (selectedGames.length >= MAX_SELECTED_GAMES) {
+                            option.classList.add('disabled');
+                            option.style.pointerEvents = 'none';
+                            option.style.opacity = '0.5';
+                        } else {
+                            option.classList.remove('disabled');
+                            option.style.pointerEvents = '';
+                            option.style.opacity = '';
+                        }
+                    }
+                });
+            } else {
+
+                gameOptions.forEach(option => {
+                    option.classList.remove('disabled');
+                    option.style.pointerEvents = '';
+                    option.style.opacity = '';
+                });
+            }
+        }
+
+        function resetInterface() {
+            keyCountGroup.classList.add('hidden');
+            startBtn.classList.add('hidden');
+            selectedGames = [];
+            gameOptions.forEach(option => option.classList.remove('selected'));
+            keyCountLabel.innerText = 'Выберите игру(ы)';
+            if (!isMassGenerationMode) {
+                keyRange.value = 1;
+                keyValue.innerText = '1';
+            }
+
+            document.querySelector('.grid-container').style.display = 'grid';
+        }
+
+        function updateSelectedGames() {
+            if (selectedGames.length > 0) {
+                startBtn.classList.remove('hidden');
+                if (isMassGenerationMode) {
+                    keyCountLabel.innerText = `Выбрано игр: ${selectedGames.length}. Будет сгенерировано ${selectedGames.length * 4} ключей.`;
+                    keyCountGroup.classList.add('hidden');
+                } else {
+                    keyCountLabel.innerText = 'Количество ключей:';
+                    keyCountGroup.classList.remove('hidden');
+                    keyCountGroup.style.removeProperty('display');
+                }
+            } else {
+                startBtn.classList.add('hidden');
+                keyCountLabel.innerText = 'Выберите игру(ы)';
+                keyCountGroup.classList.add('hidden');
+            }
+        }
+
+        keyRange.addEventListener('input', () => {
+            keyValue.innerText = keyRange.value;
+        });
+
+        startBtn.addEventListener('click', async () => {
+            const keyCount = isMassGenerationMode ? 4 : parseInt(keyRange.value);
+
+            document.querySelector('.grid-container').style.display = 'none';
+            massGenerationBtn.style.display = 'none';
+
+            progressBar.style.width = '0%';
+            progressText.innerText = '0%';
+            progressLog.innerText = 'Прогресс...';
+            progressContainer.classList.remove('hidden');
+            keyContainer.classList.add('hidden');
+            generatedKeysTitle.classList.add('hidden');
+            keysList.innerHTML = '';
+            copyAllBtn.classList.add('hidden');
+            startBtn.classList.add('hidden');
+            keyCountGroup.classList.add('hidden');
+            startBtn.disabled = true;
+
+            let totalKeys = isMassGenerationMode ? selectedGames.length * 4 : keyCount;
+            keyCountLabel.innerText = `Генерируется ключей: ${totalKeys}`;
+
+            let progress = 0;
+            const updateProgress = (increment, message) => {
+                progress += increment;
+                progress = Math.min(progress, 100);
+                const roundedProgress = Math.round(progress);
+                progressBar.style.width = `${roundedProgress}%`;
+                progressText.innerText = `${roundedProgress}%`;
+                progressLog.innerText = message;
+            };
+
+            const generateKeyProcess = async (gameId) => {
+                const game = games[gameId];
+                const clientId = generateClientId();
+                let clientToken;
+                try {
+                    clientToken = await login(clientId, game.appToken);
+                } catch (error) {
+                    alert(`Не удалось авторизоваться: ${error.message}`);
+                    return null;
+                }
+
+                for (let i = 0; i < game.attempts; i++) {
+                    const hasCode = await emulateProgress(clientToken, game.promoId);
+                    updateProgress((100 / (game.attempts * totalKeys)), `Имитация прогресса ${i + 1}/${game.attempts} для ${game.name}...`);
+                    if (hasCode) {
+                        break;
+                    }
+                    await sleep(game.timing);
+                }
+
+                try {
+                    const key = await generateKey(clientToken, game.promoId);
+                    updateProgress((100 / totalKeys), `Создание ключа для ${game.name}...`);
+                    return { game: game.name, key };
+                } catch (error) {
+                    alert(`Не удалось создать ключ для ${game.name}: ${error.message}`);
+                    return null;
+                }
+            };
+
+            const promises = [];
+            for (const gameId of selectedGames) {
+                for (let i = 0; i < (isMassGenerationMode ? 4 : keyCount); i++) {
+                    promises.push(generateKeyProcess(gameId));
+                }
+            }
+
+            Promise.all(promises).then(results => {
+                results.forEach(result => {
+                    if (result) {
+                        keysList.innerHTML += `
+                <div class="key-item">
+                    <input type="text" value="${result.key}" readonly>
+                    <button class="copyKeyBtn" data-key="${result.key}">Скопировать ключ</button>
+                </div>
+            `;
+                    }
+
+                    const scrollingElement = (document.scrollingElement || document.body);
+                    scrollingElement.scrollTop = scrollingElement.scrollHeight;
+                });
+
+                if (results.some(result => result)) {
+                    copyAllBtn.classList.remove('hidden');
+                }
+                console.log("isMassGenerationMode:", isMassGenerationMode);
+                if (!isMassGenerationMode) {
+                    console.log("Attempting to show keyCountGroup");
+                    keyCountGroup.style.display = '';
+                    console.log("keyCountGroup display style:", keyCountGroup.style.display);
+                }
+                keyContainer.classList.remove('hidden');
+                generatedKeysTitle.classList.remove('hidden');
+                massGenerationBtn.classList.remove('active');
+                massGenerationBtn.removeAttribute('style');
+                massGenerationBtn.style.display = '';
+
+                document.querySelectorAll('.copyKeyBtn').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const key = event.target.getAttribute('data-key');
+                        copyToClipboard(key);
+                    });
+                });
+
+                copyAllBtn.addEventListener('click', () => {
+                    const keysText = results.filter(result => result).map(result => result.key).join('\n');
+                    copyToClipboard(keysText);
+                });
+
+                updateProgress(0, 'Готово');
+                startBtn.classList.remove('hidden');
+                document.querySelector('.grid-container').style.display = 'grid';
+                startBtn.disabled = false;
+
+                if (!isMassGenerationMode) {
+                    keyCountGroup.classList.remove('hidden');
+                }
+
+                const scrollingElement = (document.scrollingElement || document.body);
+                scrollingElement.scrollTop = scrollingElement.scrollHeight;
+            });
+        });
+
+        const generateClientId = () => {
+            const timestamp = Date.now();
+            const randomNumbers = Array.from({ length: 19 }, () => Math.floor(Math.random() * 10)).join('');
+            return `${timestamp}-${randomNumbers}`;
+        };
+
+        const login = async (clientId, appToken) => {
+            const response = await fetch('https://api.gamepromo.io/promo/login-client', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    appToken,
+                    clientId,
+                    clientOrigin: 'deviceid'
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Не удалось авторизоваться');
+            }
+
+            const data = await response.json();
+            return data.clientToken;
+        };
+
+        const emulateProgress = async (clientToken, promoId) => {
+            try {
+                const response = await fetch('https://api.gamepromo.io/promo/register-event', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${clientToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        promoId,
+                        eventId: generateUUID(),
+                        eventOrigin: 'undefined'
+                    })
+                });
+
+                if (!response.ok) {
+                    return false;
+                }
+
+                const data = await response.json();
+                return data.hasCode;
+            } catch (error) {
+                console.error('Не удалось имитировать прогресс:', error);
+                return false;
+            }
+        };
+
+        const generateKey = async (clientToken, promoId) => {
+            const response = await fetch('https://api.gamepromo.io/promo/create-code', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${clientToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    promoId
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Не удалось создать ключ');
+            }
+
+            const data = await response.json();
+            return data.promoCode;
+        };
+
+        const generateUUID = () => {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        };
+
+        const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+        const copyToClipboard = (text) => {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    copyStatus.classList.remove('hidden');
+                    setTimeout(() => copyStatus.classList.add('hidden'), 2000);
+                }).catch(err => {
+                    console.error('Не удалось скопировать текст: ', err);
+                });
+            } else {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.top = '0';
+                textArea.style.left = '0';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+
+                try {
+                    const successful = document.execCommand('copy');
+                    if (successful) {
+                        copyStatus.classList.remove('hidden');
+                        setTimeout(() => copyStatus.classList.add('hidden'), 2000);
+                    }
+                } catch (err) {
+                    console.error('Fallback: Упс, Не удалось скопировать', err);
+                }
+
+                document.body.removeChild(textArea);
+            }
+        };
+
+    });
+</script>
 </body>
 </html>
