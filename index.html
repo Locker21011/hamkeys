@@ -598,7 +598,7 @@
             };
             
 
-let loginQueue = [];
+ let loginQueue = [];
     for (const gameId of selectedGames) {
         for (let i = 0; i < (isMassGenerationMode ? 4 : keyCount); i++) {
             loginQueue.push(gameId);
@@ -620,6 +620,7 @@ let loginQueue = [];
             clientTokens.push({ gameId, clientToken });
         } catch (error) {
             console.error(`Не удалось авторизоваться для ${game.name}: ${error.message}`);
+            updateProgress(0, `Ошибка логина для ${game.name}: ${error.message}`);
             clientTokens.push({ gameId, clientToken: null });
         }
     }
@@ -631,6 +632,7 @@ let loginQueue = [];
             return Promise.resolve(null);
         }
     });
+
 
     Promise.all(promises).then(results => {
                 results.forEach(result => {
@@ -742,25 +744,28 @@ let loginQueue = [];
             }
         };
 
-        const generateKey = async (clientToken, promoId) => {
-            const response = await fetch('https://api.gamepromo.io/promo/create-code', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${clientToken}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    promoId
-                })
-            });
+const generateKeyProcess = async (gameId, clientToken) => {
+    const game = games[gameId];
 
-            if (!response.ok) {
-                throw new Error('Не удалось создать ключ');
-            }
+    for (let i = 0; i < game.attempts; i++) {
+        const hasCode = await emulateProgress(clientToken, game.promoId);
+        updateProgress((100 / (game.attempts * totalKeys)), `Имитация прогресса ${i + 1}/${game.attempts} для ${game.name}...`);
+        if (hasCode) {
+            break;
+        }
+        await sleep(game.timing);
+    }
 
-            const data = await response.json();
-            return data.promoCode;
-        };
+    try {
+        const key = await generateKey(clientToken, game.promoId);
+        updateProgress((100 / totalKeys), `Создание ключа для ${game.name}...`);
+        return { game: game.name, key };
+    } catch (error) {
+        console.error(`Не удалось создать ключ для ${game.name}: ${error.message}`);
+        updateProgress(0, `Ошибка создания ключа для ${game.name}: ${error.message}`);
+        return null;
+    }
+};
 
         const generateUUID = () => {
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
