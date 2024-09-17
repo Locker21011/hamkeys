@@ -596,49 +596,43 @@
                 progressText.innerText = `${roundedProgress}%`;
                 progressLog.innerText = message;
             };
+            
 
-const generateKeyProcess = async (gameId) => {
-    const game = games[gameId];
-    const clientId = generateClientId();
-    let clientToken;
-    
-    // Добавляем задержку перед каждым логином
-    await sleep(500);
-    
-    try {
-        clientToken = await login(clientId, game.appToken);
-    } catch (error) {
-        alert(`Не удалось авторизоваться: ${error.message}`);
-        return null;
-    }
-
-    for (let i = 0; i < game.attempts; i++) {
-        const hasCode = await emulateProgress(clientToken, game.promoId);
-        updateProgress((100 / (game.attempts * totalKeys)), `Имитация прогресса ${i + 1}/${game.attempts} для ${game.name}...`);
-        if (hasCode) {
-            break;
+let loginQueue = [];
+    for (const gameId of selectedGames) {
+        for (let i = 0; i < (isMassGenerationMode ? 4 : keyCount); i++) {
+            loginQueue.push(gameId);
         }
-        await sleep(game.timing);
     }
 
-    try {
-        const key = await generateKey(clientToken, game.promoId);
-        updateProgress((100 / totalKeys), `Создание ключа для ${game.name}...`);
-        return { game: game.name, key };
-    } catch (error) {
-        alert(`Не удалось создать ключ для ${game.name}: ${error.message}`);
-        return null;
+    let clientTokens = [];
+    for (let i = 0; i < loginQueue.length; i++) {
+        const gameId = loginQueue[i];
+        const game = games[gameId];
+        const clientId = generateClientId();
+        
+        updateProgress((100 / loginQueue.length) * i, `Логин ${i + 1}/${loginQueue.length} для ${game.name}...`);
+        
+        await sleep(500); // Задержка перед каждым логином
+        
+        try {
+            const clientToken = await login(clientId, game.appToken);
+            clientTokens.push({ gameId, clientToken });
+        } catch (error) {
+            console.error(`Не удалось авторизоваться для ${game.name}: ${error.message}`);
+            clientTokens.push({ gameId, clientToken: null });
+        }
     }
-};
 
-            const promises = [];
-            for (const gameId of selectedGames) {
-                for (let i = 0; i < (isMassGenerationMode ? 4 : keyCount); i++) {
-                    promises.push(generateKeyProcess(gameId));
-                }
-            }
+    const promises = clientTokens.map(({ gameId, clientToken }) => {
+        if (clientToken) {
+            return generateKeyProcess(gameId, clientToken);
+        } else {
+            return Promise.resolve(null);
+        }
+    });
 
-            Promise.all(promises).then(results => {
+    Promise.all(promises).then(results => {
                 results.forEach(result => {
                     if (result) {
                         keysList.innerHTML += `
