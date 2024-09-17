@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -251,9 +250,9 @@
     <button id="massGenerationBtn">Режим массовой генерации</button>
     <div id="gameSelectContainer" class="grid-container">
         <div class="game-option" data-game="15">
-                <img src="https://cdn.hamsterkombat.io/hide_balls/image.webp" alt="Hide Ball">
-                <p>Hide Ball</p>
-            </div>
+            <img src="https://cdn.hamsterkombat.io/hide_balls/image.webp" alt="Hide Ball">
+            <p>Hide Ball</p>
+        </div>
         <div class="game-option" data-game="14">
             <img src="https://cdn.hamsterkombat.io/bouncemasters/image.webp" alt="Bouncemasters">
             <p>Bouncemasters</p>
@@ -416,11 +415,11 @@
                 attempts: 30,
             },
             15: {
-            name: 'Hide Ball',
-            appToken: '4bf4966c-4d22-439b-8ff2-dc5ebca1a600',
-            promoId: '4bf4966c-4d22-439b-8ff2-dc5ebca1a600',
-            timing: 40000, // 30 seconds
-            attempts: 30,
+                name: 'Hide Ball',
+                appToken: '4bf4966c-4d22-439b-8ff2-dc5ebca1a600',
+                promoId: '4bf4966c-4d22-439b-8ff2-dc5ebca1a600',
+                timing: 40000, // 30 seconds
+                attempts: 30,
             }
         };
 
@@ -441,10 +440,6 @@
         const copyStatus = document.getElementById('copyStatus');
         const generateMoreBtn = document.getElementById('generateMoreBtn');
         const massGenerationBtn = document.getElementById('massGenerationBtn');
-        const loginWithDelay = async (clientId, appToken, delay) => {
-    await sleep(delay);
-    return login(clientId, appToken);
-};
 
         let selectedGames = [];
         let isMassGenerationMode = false;
@@ -602,16 +597,16 @@
                 progressLog.innerText = message;
             };
 
-const generateKeyProcess = async (gameId) => {
-        const game = games[gameId];
-        const clientId = generateClientId();
-        let clientToken;
-        try {
-            clientToken = await loginWithDelay(clientId, game.appToken, 500); // 500 мс задержка
-        } catch (error) {
-            console.error(`Не удалось авторизоваться для ${game.name}: ${error.message}`);
-            return null;
-        }
+            const generateKeyProcess = async (gameId) => {
+                const game = games[gameId];
+                const clientId = generateClientId();
+                let clientToken;
+                try {
+                    clientToken = await login(clientId, game.appToken);
+                } catch (error) {
+                    alert(`Не удалось авторизоваться: ${error.message}`);
+                    return null;
+                }
 
                 for (let i = 0; i < game.attempts; i++) {
                     const hasCode = await emulateProgress(clientToken, game.promoId);
