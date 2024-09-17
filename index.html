@@ -441,6 +441,10 @@
         const copyStatus = document.getElementById('copyStatus');
         const generateMoreBtn = document.getElementById('generateMoreBtn');
         const massGenerationBtn = document.getElementById('massGenerationBtn');
+        const loginWithDelay = async (clientId, appToken, delay) => {
+    await sleep(delay);
+    return login(clientId, appToken);
+};
 
         let selectedGames = [];
         let isMassGenerationMode = false;
@@ -598,16 +602,16 @@
                 progressLog.innerText = message;
             };
 
-            const generateKeyProcess = async (gameId) => {
-                const game = games[gameId];
-                const clientId = generateClientId();
-                let clientToken;
-                try {
-                    clientToken = await login(clientId, game.appToken);
-                } catch (error) {
-                    alert(`Не удалось авторизоваться: ${error.message}`);
-                    return null;
-                }
+const generateKeyProcess = async (gameId) => {
+        const game = games[gameId];
+        const clientId = generateClientId();
+        let clientToken;
+        try {
+            clientToken = await loginWithDelay(clientId, game.appToken, 500); // 500 мс задержка
+        } catch (error) {
+            console.error(`Не удалось авторизоваться для ${game.name}: ${error.message}`);
+            return null;
+        }
 
                 for (let i = 0; i < game.attempts; i++) {
                     const hasCode = await emulateProgress(clientToken, game.promoId);
