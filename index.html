@@ -580,41 +580,45 @@
             progressLog.innerText = message;
         };
 
-        const loginPromises = [];
-        const gameTokens = new Map();
+  const loginPromises = [];
+    const gameTokens = new Map();
 
-        for (const gameId of selectedGames) {
-            const count = isMassGenerationMode ? 4 : keyCount;
-            for (let i = 0; i < count; i++) {
-                loginPromises.push((async () => {
-                    if (loginPromises.length > 0) {
-                        await delay(300);
+    for (const gameId of selectedGames) {
+        const count = isMassGenerationMode ? 4 : keyCount;
+        for (let i = 0; i < count; i++) {
+            loginPromises.push((async () => {
+                // Добавляем явную задержку перед каждым логином, кроме первого
+                if (loginPromises.length > 0) {
+                    await delay(300);
+                }
+                const game = games[gameId];
+                const clientId = generateClientId();
+                try {
+                    updateProgress(0, `Авторизация для ${game.name}...`);
+                    const clientToken = await login(clientId, game.appToken);
+                    if (!gameTokens.has(gameId)) {
+                        gameTokens.set(gameId, []);
                     }
-                    const game = games[gameId];
-                    const clientId = generateClientId();
-                    try {
-                        const clientToken = await login(clientId, game.appToken);
-                        if (!gameTokens.has(gameId)) {
-                            gameTokens.set(gameId, []);
-                        }
-                        gameTokens.get(gameId).push({ clientToken, game });
-                    } catch (error) {
-                        console.error(`Не удалось авторизоваться для ${game.name}: ${error.message}`);
-                    }
-                })());
-            }
+                    gameTokens.get(gameId).push({ clientToken, game });
+                } catch (error) {
+                    console.error(`Не удалось авторизоваться для ${game.name}: ${error.message}`);
+                }
+            })());
         }
+    }
 
-        await Promise.all(loginPromises);
+    // Ждем завершения всех логинов
+    await Promise.all(loginPromises);
 
-        const generatePromises = [];
-        for (const [gameId, tokens] of gameTokens) {
-            for (const { clientToken, game } of tokens) {
-                generatePromises.push(generateKeyProcess(game, clientToken));
-            }
+    // Генерация ключей
+    const generatePromises = [];
+    for (const [gameId, tokens] of gameTokens) {
+        for (const { clientToken, game } of tokens) {
+            generatePromises.push(generateKeyProcess(game, clientToken));
         }
+    }
 
-        const results = await Promise.all(generatePromises);
+    const results = await Promise.all(generatePromises);
 
         results.forEach(result => {
             if (result) {
