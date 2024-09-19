@@ -249,6 +249,14 @@
     <h1>Hamster Генератор ключей</h1>
     <button id="massGenerationBtn">Режим массовой генерации</button>
     <div id="gameSelectContainer" class="grid-container">
+	    <div class="game-option" data-game="19">
+                <img src="https://cdn.hamsterkombat.io/among_water/image.webp" alt="Infected Frontier">
+                <p>Among Water</p>
+            </div>
+	<div class="game-option" data-game="18">
+                <img src="https://cdn.hamsterkombat.io/infected_frontier/image.webp" alt="Infected Frontier">
+                <p>Infected Frontier</p>
+            </div>
         <div class="game-option" data-game="17">
                 <img src="https://cdn.hamsterkombat.io/countmasters/image.webp" alt="Pin Out Master">
                 <p>Count Masters</p>
@@ -441,6 +449,20 @@
             appToken: '4bdc17da-2601-449b-948e-f8c7bd376553',
             promoId: '4bdc17da-2601-449b-948e-f8c7bd376553',
             timing: 30000, // 30 seconds
+            attempts: 30,
+        },
+        18: {
+            name: 'Infected Frontier',
+            appToken: 'eb518c4b-e448-4065-9d33-06f3039f0fcb',
+            promoId: 'eb518c4b-e448-4065-9d33-06f3039f0fcb',
+            timing: 20000, // 30 seconds
+            attempts: 30,
+        },
+        19: {
+            name: 'Among Water',
+            appToken: 'daab8f83-8ea2-4ad0-8dd5-d33363129640',
+            promoId: 'daab8f83-8ea2-4ad0-8dd5-d33363129640',
+            timing: 20000, // 30 seconds
             attempts: 30,
         }
             
