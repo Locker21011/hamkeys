@@ -249,6 +249,10 @@
     <h1>Hamster Генератор ключей</h1>
     <button id="massGenerationBtn">Режим массовой генерации</button>
     <div id="gameSelectContainer" class="grid-container">
+	    <div class="game-option" data-game="20">
+                <img src="https://cdn.hamsterkombat.io/factory_world/image.webp" alt="Factory World">
+                <p>Factory World</p>
+            </div>
 	    <div class="game-option" data-game="19">
                 <img src="https://cdn.hamsterkombat.io/among_water/image.webp" alt="Infected Frontier">
                 <p>Among Water</p>
@@ -462,6 +466,13 @@
             name: 'Among Water',
             appToken: 'daab8f83-8ea2-4ad0-8dd5-d33363129640',
             promoId: 'daab8f83-8ea2-4ad0-8dd5-d33363129640',
+            timing: 20000, // 30 seconds
+            attempts: 30,
+        },
+        20: {
+            name: 'Factory World',
+            appToken: 'd02fc404-8985-4305-87d8-32bd4e66bb16',
+            promoId: 'd02fc404-8985-4305-87d8-32bd4e66bb16',
             timing: 20000, // 30 seconds
             attempts: 30,
         }
