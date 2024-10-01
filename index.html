@@ -249,6 +249,16 @@
     <h1>Hamster Генератор ключей</h1>
     <button id="massGenerationBtn">Режим массовой генерации</button>
     <div id="gameSelectContainer" class="grid-container">
+	    <div class="game-option" data-game="22">
+                <img src="https://cdn.hamsterkombat.io/cooking_stories/image.webp" alt="Cooking Stories">
+                <p>Cooking Stories</p>
+            </div>
+	<div class="game-option" data-game="21">
+                <img src="https://cdn.hamsterkombat.io/snake_run/image.webp" alt="Snake Run">
+                <p>Snake Run</p>
+            </div>
+	<div class="game-option" data-game="20">
+                <img src="https://cdn.hamsterkombat.io/factory_world/image.webp" alt="Factory World">
 	    <div class="game-option" data-game="20">
                 <img src="https://cdn.hamsterkombat.io/factory_world/image.webp" alt="Factory World">
                 <p>Factory World</p>
@@ -473,6 +483,20 @@
             name: 'Factory World',
             appToken: 'd02fc404-8985-4305-87d8-32bd4e66bb16',
             promoId: 'd02fc404-8985-4305-87d8-32bd4e66bb16',
+            timing: 20000, // 30 seconds
+            attempts: 30,
+         },
+        21: {
+            name: 'Snake Run',
+            appToken: 'c8e017e2-8817-4d02-bce6-b951e74bb18f',
+            promoId: 'c8e017e2-8817-4d02-bce6-b951e74bb18f',
+            timing: 20000, // 30 seconds
+            attempts: 30,
+        },
+       22: {
+            name: 'Cooking Stories',
+            appToken: 'ed526e8c-e6c8-40fd-b72a-9e78ff6a2054',
+            promoId: 'ed526e8c-e6c8-40fd-b72a-9e78ff6a2054',
             timing: 20000, // 30 seconds
             attempts: 30,
         }
